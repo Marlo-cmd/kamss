@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>💖Feliz aniversario💖</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  background: #000;
+  overflow: hidden;
+  font-family: 'Pacifico', cursive;
+}
+
+/* Canvas */
+#interactiveParticles {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+}
+
+/* Containers */
+#backgroundHeartContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 2;
+  pointer-events: none;
+}
+
+#clickEffectContainer {
+  position: fixed;
+  inset: 0;
+  z-index: 4;
+  pointer-events: none;
+}
+
+/* Texto central */
+#mainText {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 40px;
+  color: #ff66b2;
+  z-index: 5;
+  animation: pulseGlow 2s infinite;
+  text-shadow:
+    0 0 5px #ff66b2,
+    0 0 15px #ff4d94,
+    0 0 30px #ff1a75;
+}
+
+@keyframes pulseGlow {
+  50% {
+    transform: translate(-50%, -50%) scale(1.08);
+  }
+}
+
+/* Mensagem interação */
+#interactionMessage {
+  position: absolute;
+  top: 60%;
+  width: 100%;
+  text-align: center;
+  opacity: 0;
+  z-index: 5;
+  color: #fff;
+}
+
+/* Chuva de frases */
+.background-text-rain {
+  position: absolute;
+  top: -50px;
+  color: #ff99cc;
+  animation: fallText 10s linear forwards;
+  z-index: 3;
+  pointer-events: none;
+}
+
+@keyframes fallText {
+  to { transform: translateY(120vh); }
+}
+
+/* Corações flutuantes */
+.background-floating-heart {
+  position: absolute;
+  color: #ff4d94;
+  opacity: 0.8;
+  animation: floatUp 8s linear forwards;
+}
+
+@keyframes floatUp {
+  to {
+    transform: translateY(-120vh) translateX(var(--float-offset));
+    opacity: 0;
+  }
+}
+
+/* Palavras no clique */
+.click-effect-word {
+  position: absolute;
+  color: #ffb6d9;
+  font-size: 20px;
+  animation: riseFade 2.5s ease-out forwards;
+  pointer-events: none;
+  text-shadow: 0 0 8px #ff66b2;
+}
+
+@keyframes riseFade {
+  to {
+    transform: translateY(-80px);
+    opacity: 0;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<canvas id="interactiveParticles"></canvas>
+<div id="backgroundHeartContainer"></div>
+<div id="clickEffectContainer"></div>
+
+<div id="mainText">Clique aqui ❤</div>
+<div id="interactionMessage">Toque na tela para mais surpresas 💖</div>
+
+<audio id="backgroundMusic" src="assets/amor.mp3" loop></audio>
+
+<script>
+const canvas = document.getElementById('interactiveParticles');
+const ctx = canvas.getContext('2d');
+const music = document.getElementById('backgroundMusic');
+const heartContainer = document.getElementById('backgroundHeartContainer');
+const clickContainer = document.getElementById('clickEffectContainer');
+const interactionMessage = document.getElementById('interactionMessage');
+
+canvas.width = innerWidth;
+canvas.height = innerHeight;
+window.onresize = () => {
+  canvas.width = innerWidth;
+  canvas.height = innerHeight;
+};
+
+// Frases
+const romanticMessages = [
+  "Meu amor por você é puro!",
+  "Você é a estrela mais linda!",
+  "Minha inspiração!",
+  "Sua presença me encanta!",
+  "Nosso amor é mágico!",
+  "Sorriso que me desarma!",
+  "Você é perfeita!",
+  "Minha joia rara!",
+  "Com você sou mais feliz!",
+  "Sua alma é um jardim!",
+  "Cabelos de anjo!",
+  "Seus olhos me hipnotizam!",
+  "Ilumina minha escuridão como a lua",
+  "Feliz seu dia"
+];
+
+// Elogios
+const praiseWords = [
+  "Linda","Perfeita","Magnífica","Radiante",
+  "Te amo","Meu amor","Minha vida",
+  "Única","Maravilhosa","Especial"
+];
+
+// Chuva de frases
+setInterval(() => {
+  const el = document.createElement('div');
+  el.className = 'background-text-rain';
+  el.innerText = romanticMessages[Math.floor(Math.random()*romanticMessages.length)];
+  el.style.left = Math.random()*innerWidth + 'px';
+  el.style.fontSize = (18 + Math.random()*12) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 10000);
+}, 1000);
+
+// Corações
+setInterval(() => {
+  const h = document.createElement('span');
+  h.className = 'background-floating-heart';
+  h.innerText = '❤';
+  h.style.left = Math.random()*innerWidth + 'px';
+  h.style.bottom = '-40px';
+  h.style.fontSize = (20 + Math.random()*20) + 'px';
+  h.style.setProperty('--float-offset', (Math.random()-0.5)*200+'px');
+  heartContainer.appendChild(h);
+  h.onanimationend = () => h.remove();
+}, 300);
+
+// Clique
+document.addEventListener('click', e => {
+  const w = document.createElement('span');
+  w.className = 'click-effect-word';
+  w.innerText = praiseWords[Math.floor(Math.random()*praiseWords.length)];
+  w.style.left = e.clientX + 'px';
+  w.style.top = e.clientY + 'px';
+  clickContainer.appendChild(w);
+  w.onanimationend = () => w.remove();
+
+  if (music.paused) {
+    music.volume = 0.6;
+    music.play().catch(()=>{});
+  }
+
+  interactionMessage.style.opacity = 1;
+  setTimeout(()=>interactionMessage.style.opacity=0, 2000);
+});
+</script>
+
+</body>
+</html>
